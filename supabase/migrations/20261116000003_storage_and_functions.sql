@@ -12,6 +12,11 @@ on conflict (id) do update
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
 
+-- Drop first so this file can be safely re-run (e.g. pasted into the SQL Editor twice).
+drop policy if exists user_photos_insert_own on storage.objects;
+drop policy if exists user_photos_select_own on storage.objects;
+drop policy if exists user_photos_delete_own on storage.objects;
+
 create policy user_photos_insert_own on storage.objects
   for insert to authenticated
   with check (bucket_id = 'user-photos' and (storage.foldername(name))[1] = auth.uid()::text);

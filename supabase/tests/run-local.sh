@@ -27,4 +27,7 @@ for f in "$ROOT"/supabase/migrations/*.sql; do
   echo "migrate: $(basename "$f")"
   "${PSQL[@]}" -f "$f"
 done
+# Files that users may paste into the SQL Editor again must be safe to re-run.
+echo "re-run: $(basename "$ROOT"/supabase/migrations/*_storage_and_functions.sql)"
+"${PSQL[@]}" -f "$ROOT"/supabase/migrations/*_storage_and_functions.sql
 "${PSQL[@]}" -o /dev/null -f "$ROOT/supabase/tests/rls_test.sql" 2>&1 | sed -E "s/^psql:[^ ]+ NOTICE:  /  /"
